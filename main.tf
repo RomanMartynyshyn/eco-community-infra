@@ -34,7 +34,8 @@ module "network" {
 # module "security" {
 #   source = "./modules/security"
 #
-#   project_name = var.project_name
+#   project_name      = var.project_name
+#   media_bucket_name = var.media_bucket_name
 # }
 
 # ─── DATABASE (RDS PostgreSQL + Secrets Manager) ──────────────────────────────
@@ -46,8 +47,17 @@ module "database" {
   db_security_group_id = module.network.db_security_group_id
 }
 
+# ─── REGISTRY (ECR Docker Репозиторії) ─────────────────────────────────────────
+# Має бути створено одразу, щоб було куди пушити Docker образи перед запуском compute.
+module "registry" {
+  source = "./modules/registry"
+
+  project_name = var.project_name
+}
+
 # ─── COMPUTE (ECR + ECS Fargate: backend + bot) ───────────────────────────────
-# Розкоментуй після: 1) terraform apply (network+db) 2) docker push в ECR
+# Розкоментуй після: 1) terraform apply (network+db+media) 2) docker push в ECR
+#                    3) Заповни секрети в AWS Console → Secrets Manager
 # module "compute" {
 #   source = "./modules/compute"
 #
@@ -57,7 +67,33 @@ module "database" {
 #   alb_listener_arn            = module.network.alb_listener_arn
 #   alb_target_group_arn        = module.network.alb_target_group_arn
 #   ecs_task_execution_role_arn = module.security.ecs_task_execution_role_arn
+#
+#   # Secrets Manager ARNs (значення заповнюються вручну в AWS Console)
+#   db_secret_arn  = module.database.db_secret_arn
+#   app_secret_arn = module.database.app_secret_arn
+#
+#   # DB connection info (без пароля — він в Secrets Manager)
+#   db_address  = module.database.db_address
+#   db_name     = module.database.db_name
+#   db_username = module.database.db_username
+#
+#   # Media S3
+#   media_bucket_name = var.media_bucket_name
+#   media_bucket_url  = module.media.media_bucket_url
+#
+#   # ECR Repositories URLs
+#   backend_repository_url = module.registry.backend_repository_url
+#   bot_repository_url     = module.registry.bot_repository_url
 # }
+
+# ─── MEDIA (S3 для фото маркерів) ─────────────────────────────────────────────
+module "media" {
+  source = "./modules/media"
+
+  project_name      = var.project_name
+  media_bucket_name = var.media_bucket_name
+  environment       = var.environment
+}
 
 # ─── CDN (S3 + CloudFront + ACM + Route53) ────────────────────────────────────
 # module "cdn" {

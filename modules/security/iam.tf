@@ -17,13 +17,45 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   }
 }
 
+# Базові права ECS: тягнути образ з ECR, писати логи в CloudWatch
 resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Allow ECS to pull secrets from Secrets Manager
+# Читання секретів з Secrets Manager (для secrets[] блоку в task definition)
 resource "aws_iam_role_policy_attachment" "ecs_secrets" {
   role       = aws_iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+
+# S3 доступ для бекенду: запис фото маркерів у media bucket
+resource "aws_iam_policy" "ecs_s3_media" {
+  name        = "${var.project_name}-ecs-s3-media-policy"
+  description = "Allow ECS backend to read/write media files in S3"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "MediaBucketAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",    # завантаження фото
+          "s3:GetObject",    # читання фото (для перевірки)
+          "s3:DeleteObject", # видалення старих фото
+          "s3:ListBucket"    # перевірка існування файлів
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.media_bucket_name}",
+          "arn:aws:s3:::${var.media_bucket_name}/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_s3_media" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_s3_media.arn
 }

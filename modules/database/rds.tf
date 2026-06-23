@@ -13,7 +13,7 @@ resource "aws_db_instance" "main" {
   username          = "postgres"
 
   # Password sourced from Secrets Manager — generated in secrets.tf
-  password = jsondecode(aws_secretsmanager_secret_version.main.secret_string)["DB_PASSWORD"]
+  password = jsondecode(aws_secretsmanager_secret_version.db.secret_string)["DB_PASSWORD"]
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [var.db_security_group_id]

@@ -25,16 +25,16 @@ output "alb_dns_name" {
 #   value       = module.cdn.s3_bucket_name
 # }
 
-# ─── Compute — розкоментуй разом з module "compute" в main.tf ────────────────
-# output "backend_ecr_url" {
-#   description = "Push backend image here: docker push <url>:latest"
-#   value       = module.compute.backend_ecr_url
-# }
+# ─── Registry (ECR) ──────────────────────────────────────────────────────────
+output "backend_ecr_url" {
+  description = "Push backend image here: docker push <url>:latest"
+  value       = module.registry.backend_repository_url
+}
 
-# output "bot_ecr_url" {
-#   description = "Push bot image here: docker push <url>:latest"
-#   value       = module.compute.bot_ecr_url
-# }
+output "bot_ecr_url" {
+  description = "Push bot image here: docker push <url>:latest"
+  value       = module.registry.bot_repository_url
+}
 
 # output "ecs_cluster_name" {
 #   description = "ECS cluster name"

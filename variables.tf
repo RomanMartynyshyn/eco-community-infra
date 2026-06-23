@@ -23,9 +23,15 @@ variable "environment" {
 }
 
 variable "bucket_name" {
-  description = "Unique name for bucket"
+  description = "Unique name for the frontend S3 bucket (CloudFront origin)"
   type        = string
-  default     = "eco-project-bucket"
+  default     = "eco-project-bucket-unique-12345"
+}
+
+variable "media_bucket_name" {
+  description = "Unique name for the media S3 bucket (marker photos)"
+  type        = string
+  default     = "eco-project-media-unique-12345"
 }
 
 variable "domain_name" {

@@ -8,6 +8,8 @@ environment = "dev"
 
 bucket_name = "eco-project-bucket-unique-12345"
 
+media_bucket_name = "eco-project-media-unique-12345"
+
 price_class = "PriceClass_100"
 
 domain_name = "ecoproject.com"
