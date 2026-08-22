@@ -58,8 +58,15 @@ resource "aws_instance" "nat" {
   # Enable IP forwarding + iptables masquerade (NAT logic)
   user_data = <<-EOF
     #!/bin/bash
+    # Встановлюємо пакет щоб правила iptables зберігались між reboot-ами
+    yum install -y iptables-services
+    systemctl enable iptables
+
+    # Вмикаємо IP forwarding
     echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
     sysctl -p
+
+    # NAT masquerade: пакети з приватних підмереж виходять через eth0
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     service iptables save
   EOF

@@ -1,2 +1,14 @@
 /.terraform
 .terraform.lock.hcl
+
+# Terraform state — можуть містити sensitive дані у відкритому вигляді
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.*.backup
+
+# Локальні override-файли розробника
+*.tfvars.local
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

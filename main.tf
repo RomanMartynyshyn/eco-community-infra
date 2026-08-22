@@ -16,7 +16,7 @@ provider "aws" {
 }
 
 # CloudFront ACM certificates MUST be created in us-east-1
-# Розкоментуй коли підключиш cdn модуль
+# Розкоментуй коли підключиш власний домен
 # provider "aws" {
 #   alias  = "us_east_1"
 #   region = "us-east-1"
@@ -64,6 +64,7 @@ module "compute" {
   alb_listener_arn            = module.network.alb_listener_arn
   alb_target_group_arn        = module.network.alb_target_group_arn
   ecs_task_execution_role_arn = module.security.ecs_task_execution_role_arn
+  ecs_task_role_arn           = module.security.ecs_task_role_arn
 
   # Secrets Manager ARNs (значення заповнені вручну в AWS Console)
   db_secret_arn  = module.database.db_secret_arn
@@ -92,18 +93,16 @@ module "media" {
   environment       = var.environment
 }
 
-# ─── CDN (S3 + CloudFront + ACM + Route53) ────────────────────────────────────
-# module "cdn" {
-#   source = "./modules/cdn"
+# ─── CDN (S3 + CloudFront) ────────────────────────────────────────────────────
+module "cdn" {
+  source = "./modules/cdn"
 
-#   providers = {
-#     aws           = aws
-#     aws.us_east_1 = aws.us_east_1
-#   }
-
-#   project_name = var.project_name
-#   domain_name  = var.domain_name
-#   bucket_name  = var.bucket_name
-#   environment  = var.environment
-#   price_class  = var.price_class
-# }
+  project_name = var.project_name
+  bucket_name  = var.bucket_name
+  environment  = var.environment
+  price_class  = "PriceClass_100"
+  alb_dns_name = module.network.alb_dns_name
+  # domain_name не потрібен — використовуємо *.cloudfront.net
+  # Розкоментуй поле нижче коли буде власний домен:
+  # domain_name = var.domain_name
+}

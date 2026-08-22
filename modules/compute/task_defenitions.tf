@@ -5,7 +5,7 @@ resource "aws_ecs_task_definition" "backend" {
   cpu                      = "512"
   memory                   = "1024"
   execution_role_arn       = var.ecs_task_execution_role_arn
-  task_role_arn            = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_role_arn
 
   container_definitions = jsonencode([
     {
@@ -40,7 +40,7 @@ resource "aws_ecs_task_definition" "backend" {
         },
         {
           name  = "CREATE_DUMMY_USERS"
-          value = "false"
+          value = "true"
         },
         {
           name  = "AWS_REGION"
@@ -102,7 +102,7 @@ resource "aws_ecs_task_definition" "bot" {
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = var.ecs_task_execution_role_arn
-  task_role_arn            = var.ecs_task_execution_role_arn
+  task_role_arn            = var.ecs_task_role_arn
 
   container_definitions = jsonencode([
     {

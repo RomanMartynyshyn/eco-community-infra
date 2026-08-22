@@ -47,7 +47,6 @@ resource "aws_ecs_service" "backend" {
     }
   }
 
-  depends_on = [var.alb_listener_arn]
 }
 
 # ─── ECS Service: Bot ─────────────────────────────────────────────────────────

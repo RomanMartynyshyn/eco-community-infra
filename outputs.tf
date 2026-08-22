@@ -9,21 +9,21 @@ output "alb_dns_name" {
   value       = module.network.alb_dns_name
 }
 
-# ─── Frontend (CDN) — розкоментуй коли підключиш cdn модуль ─────────────────
-# output "cloudfront_domain" {
-#   description = "CloudFront distribution domain name"
-#   value       = module.cdn.cloudfront_domain
-# }
+# ─── Frontend (CDN) ──────────────────────────────────────────────────────────
+output "cloudfront_domain" {
+  description = "CloudFront URL — open this in the browser to see the frontend"
+  value       = module.cdn.cloudfront_domain
+}
 
-# output "cloudfront_id" {
-#   description = "CloudFront distribution ID (for cache invalidation in CI/CD)"
-#   value       = module.cdn.cloudfront_id
-# }
+output "cloudfront_id" {
+  description = "CloudFront distribution ID (for cache invalidation in CI/CD)"
+  value       = module.cdn.cloudfront_id
+}
 
-# output "s3_bucket_name" {
-#   description = "S3 bucket name — run: aws s3 sync ./dist s3://<bucket>"
-#   value       = module.cdn.s3_bucket_name
-# }
+output "s3_bucket_name" {
+  description = "S3 bucket name — run: aws s3 sync ./dist s3://<bucket>"
+  value       = module.cdn.s3_bucket_name
+}
 
 # ─── Registry (ECR) ──────────────────────────────────────────────────────────
 output "backend_ecr_url" {

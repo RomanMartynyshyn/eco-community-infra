@@ -24,7 +24,12 @@ variable "alb_target_group_arn" {
 }
 
 variable "ecs_task_execution_role_arn" {
-  description = "IAM role ARN for ECS task execution."
+  description = "IAM role ARN for ECS task execution (used by ECS agent: ECR pull, CloudWatch, Secrets)."
+  type        = string
+}
+
+variable "ecs_task_role_arn" {
+  description = "IAM role ARN for ECS task runtime (used by container: S3 access)."
   type        = string
 }
 
