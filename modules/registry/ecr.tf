@@ -18,7 +18,7 @@ resource "aws_ecr_repository" "bot" {
   }
 }
 
-# Lifecycle rules: автоматичне очищення старих образів (зберігаємо лише останні 5)
+# Lifecycle rules: автоматичне очищення старих образів
 # Це суттєво економить кошти на збереженні в ECR
 resource "aws_ecr_lifecycle_policy" "backend" {
   repository = aws_ecr_repository.backend.name

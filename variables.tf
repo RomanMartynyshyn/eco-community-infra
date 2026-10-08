@@ -37,7 +37,7 @@ variable "media_bucket_name" {
 variable "domain_name" {
   description = "Custom domain name for CloudFront (must have a Route53 public hosted zone, e.g. example.com)"
   type        = string
-  default     = null # CDN модуль закоментований — null безпечний за замовчуванням
+  default     = null
 }
 
 variable "price_class" {
