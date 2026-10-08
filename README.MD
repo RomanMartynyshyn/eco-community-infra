@@ -83,7 +83,7 @@ flowchart TB
             end
 
             subgraph DBSubnets[" 🗄️ Isolated DB Subnets (AZ-a / AZ-b) "]
-                RDS[("🐘 Amazon RDS PostgreSQL 16<br/>db.t3.micro | :5432")]
+                RDS[("🐘 Amazon RDS PostgreSQL 16<br/>db.t3.micro, Port 5432")]
             end
         end
 
@@ -96,32 +96,43 @@ flowchart TB
     end
 
     %% Edge Ingress Flows
-    Browser -->|HTTPS /*| CF
-    Browser -->|Direct GET /uploads/*| S3Media
-    TgUser -->|Telegram API| Bot
-    CF -->|Static Assets| OAC --> S3Front
-    CF -->|Dynamic /api/*| ALB
+    Browser -->|"HTTPS /*"| CF
+    Browser -->|"Direct GET /uploads/*"| S3Media
+    TgUser -->|"Telegram API"| Bot
+    CF -->|"Static Assets"| OAC
+    OAC --> S3Front
+    CF -->|"Dynamic /api/*"| ALB
 
     %% ALB Routing
-    ALB -->|Port 8000| Backend1
-    ALB -->|Port 8000| Backend2
+    ALB -->|"Port 8000"| Backend1
+    ALB -->|"Port 8000"| Backend2
 
     %% Internal Service Discovery
-    Bot -.->|"http://backend.eco.local/api"| CloudMap -.-> Backend1
-    Bot -.->|"http://backend.eco.local/api"| CloudMap -.-> Backend2
+    Bot -.->|"http://backend.eco.local/api"| CloudMap
+    CloudMap -.-> Backend1
+    CloudMap -.-> Backend2
 
     %% Outbound Egress via NAT
-    ECSCluster -->|Outbound HTTPS| NAT --> IGW
+    Backend1 -->|"Outbound HTTPS"| NAT
+    Backend2 -->|"Outbound HTTPS"| NAT
+    Bot -->|"Outbound HTTPS"| NAT
+    NAT --> IGW
 
     %% Data Layer Connections
-    Backend1 -->|Port 5432 (TLS)| RDS
-    Backend2 -->|Port 5432 (TLS)| RDS
+    Backend1 -->|"Port 5432 (TLS)"| RDS
+    Backend2 -->|"Port 5432 (TLS)"| RDS
 
     %% Security & Storage Interactions
-    ECSCluster -.->|IAM Task Role / S3 Put/Get| S3Media
-    ECSCluster -.->|IAM Execution Role / Pull Image| ECR
-    ECSCluster -.->|IAM Execution Role / Env Injection| SecretsMgr
-    ECSCluster -.->|Logs| CW
+    Backend1 -.->|"IAM Task Role (S3 Media)"| S3Media
+    Backend2 -.->|"IAM Task Role (S3 Media)"| S3Media
+    Backend1 -.->|"IAM Execution Role"| ECR
+    Backend2 -.->|"IAM Execution Role"| ECR
+    Bot -.->|"IAM Execution Role"| ECR
+    Backend1 -.->|"DB Secrets"| SecretsMgr
+    Bot -.->|"Bot Tokens"| SecretsMgr
+    Backend1 -.->|"CloudWatch Logs"| CW
+    Backend2 -.->|"CloudWatch Logs"| CW
+    Bot -.->|"CloudWatch Logs"| CW
 ```
 
 ---
